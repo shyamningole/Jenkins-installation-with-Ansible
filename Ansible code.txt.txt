@@ -21,6 +21,20 @@ Program 1st :
 	  
 	  +++++++++++++++==============
 
+=====================
+
+[ec2-user@ip-172-26-9-50 ~]$ cat first.yml 
+---
+- hosts: all 
+  vars: 
+   test1: "Hello Shyam" 
+  tasks: 
+   - name: Execute the script
+     command: sh /home/ec2-user/test.sh
+     when: test1 == "Hello Shyam"
+	 
+=========================
+
 [root@controller playbooks]# cat httpd.yaml
 ---
 - name: This sets up an httpd webserver
@@ -73,6 +87,8 @@ Program 1st :
 	  
 	  ===================================================
 	  
+	  ===================================================
+	  
 Control Machine Requirements
 Ansible can be run from any machine with Python 2 (versions 2.6 or 2.7) or Python 3 (versions 3.5 and higher) installed.
 Note - Windows does not support control machine.
@@ -85,15 +101,15 @@ $ sudo apt-get install ansible
 
 Ansible uses YAML syntax for expressing Ansible playbooks.
 There should be space between : and value  ...James: {name: james john, rollNo: 34, div: B, sex: male}
-Every element(member) of list should be written in a new line with same indentation starting with “- “ (- and space).
-YAML uses “|” to include newlines while showing multiple lines and “>” to suppress newlines while showing multiple lines. 
+Every element(member) of list should be written in a new line with same indentation starting with â€œ- â€œ (- and space).
+YAML uses â€œ|â€ to include newlines while showing multiple lines and â€œ>â€ to suppress newlines while showing multiple lines. 
 Due to this we can read and edit large lines. In both the cases intendentation will be ignored.
 Service/Server - A process on the machine that provides the service.
 Machine - A physical server, vm(virtual machine) or a container.
 Target machine - A machine we are about to configure with Ansible.
 Task - An action(run this, delete that) etc managed by Ansible.
 Playbook - The yml file where Ansible commands are written and yml is executed on a machine.
-Adhoc commands from ‘/usr/bin/ansible’.
+Adhoc commands from â€˜/usr/bin/ansibleâ€™.
 ansible-playbook is used for configuration management and deployment.
 ------Parallelism and Shell Commands
 Reboot your company server in 12 parallel forks at time. For this, we need to set up SSHagent for connection.
@@ -147,22 +163,22 @@ $ ansible-galaxy init --force --offline vivekrole
 $ tree vivekrole/ 
 vivekrole/ 
 +-- defaults 
-¦   +-- main.yml 
+Â¦   +-- main.yml 
 +-- files +-- handlers 
-¦   +-- main.yml 
+Â¦   +-- main.yml 
 +-- meta 
-¦   +-- main.yml 
+Â¦   +-- main.yml 
 +-- README.md +-- tasks 
-¦   +-- main.yml 
-+-- templates +-- tests ¦   +-- inventory 
-¦   +-- test.yml 
+Â¦   +-- main.yml 
++-- templates +-- tests Â¦   +-- inventory 
+Â¦   +-- test.yml 
 +-- vars 
     +-- main.yml 
  
 8 directories, 8 files
 
 =========================
-This code is of the playbook vivek_orchestrate.yml. We have defined the hosts: tomcat-node and called the two roles – install-tomcat and start-tomcat.
+This code is of the playbook vivek_orchestrate.yml. We have defined the hosts: tomcat-node and called the two roles â€“ install-tomcat and start-tomcat.
 The problem statement is that we have a war which we need to deploy on a machine via Ansible.
 
 --- 
@@ -212,7 +228,7 @@ The contents of main.yml of the start tomcat are -
 	  http://10.76.0.134:11677/HelloWorld/HelloWorld 
 	  
 ==========================
-$ sudo ansible-playbook -i hosts vivek_orchestrate.yml –vvv
+$ sudo ansible-playbook -i hosts vivek_orchestrate.yml â€“vvv
 Using /users/demo/vivek-playbook/ansible.cfg as config file.
 
 Variables:
@@ -308,7 +324,7 @@ A different solution might be defining the playbook's hosts using a variable, th
 --- 
 - hosts: '{{ target }}' 
    user: ... 
-playbook contd…
+playbook contdâ€¦
 
 -Running the Playbook--> ansible-playbook user.yml --extra-vars "target = "<your host variable>"
 
@@ -318,7 +334,7 @@ Debugging :debugging Ansible playbooks are using the modules:
 Debug and Register
 Solution
 vars: 
-   age_path: "{{vivek.name}}/demo/" – marked in yellow is the fix. 
+   age_path: "{{vivek.name}}/demo/" â€“ marked in yellow is the fix. 
  
 How to use register -> Copy this code into a yml file say test.yml and run it  
 --- 
