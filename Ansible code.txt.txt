@@ -1,0 +1,338 @@
+
+https://www.tecmint.com/ssh-passwordless-login-using-ssh-keygen-in-5-easy-steps/
+
+login to the AWS lightshells:
+
+Steps : sudo yum-config-manager --enable EPEL
+        sudo yum install ansible 
+
+Program 1st :
+
+[ec2-user@ip-172-26-15-11 ~]$ cat first.yml 
+---
+ - hosts: 172.26.0.84
+   become: true
+   become_user: root
+   tasks: 
+   - name: file creation
+     file:
+      path: "/home/ec2-user/file1.txt"
+      state: touch 
+	  
+	  +++++++++++++++==============
+
+[root@controller playbooks]# cat httpd.yaml
+---
+- name: This sets up an httpd webserver
+  hosts: ansibleclient01.local
+  tasks:
+  - name: Install apache packages 
+    yum:
+      name: httpd
+      state: present
+  - name: ensure httpd is running
+    service:
+      name: httpd 
+      state: started
+  - name: Open port 80 for http access
+    firewalld:	
+      service: http
+      permanent: true
+      state: enabled
+  - name: Restart the firewalld service to load in the firewall changes
+    service: 
+      name: firewalld 
+      state: restarted
+	  
+	  
+	  ++++++++++==================
+	  
+	  [ec2-user@ip-172-26-1-131 ~]$ cat first.yml 
+---
+- hosts: 172.26.1.60  
+  become: true
+  become_user: root
+  tasks: 
+  - name: Ansible create file with content example
+    copy:
+      dest: "/home/ec2-user/remote_server.txt"
+      content: |
+        dog1
+        tiger
+		
+[ec2-user@ip-172-26-1-131 ~]$ 
+
+- hosts: all
+  tasks:
+  - name: Ansible create new file with permissions example.
+    file:
+      path: "/Users/mdtutorials2/Documents/Ansible/devops.txt"
+      state: touch
+      mode: 0777
+      owner: mdtutorials2
+	  
+	  ===================================================
+	  
+Control Machine Requirements
+Ansible can be run from any machine with Python 2 (versions 2.6 or 2.7) or Python 3 (versions 3.5 and higher) installed.
+Note - Windows does not support control machine.
+By default, Ansible uses ssh to manage remote machine.
+For installing Ansible you have to configure PPA on your machine. For this, you have to run the following line of code -
+$ sudo apt-get update 
+$ sudo apt-get install software-properties-common 
+$ sudo apt-add-repository ppa:ansible/ansible $ sudo apt-get update 
+$ sudo apt-get install ansible
+
+Ansible uses YAML syntax for expressing Ansible playbooks.
+There should be space between : and value  ...James: {name: james john, rollNo: 34, div: B, sex: male}
+Every element(member) of list should be written in a new line with same indentation starting with “- “ (- and space).
+YAML uses “|” to include newlines while showing multiple lines and “>” to suppress newlines while showing multiple lines. 
+Due to this we can read and edit large lines. In both the cases intendentation will be ignored.
+Service/Server - A process on the machine that provides the service.
+Machine - A physical server, vm(virtual machine) or a container.
+Target machine - A machine we are about to configure with Ansible.
+Task - An action(run this, delete that) etc managed by Ansible.
+Playbook - The yml file where Ansible commands are written and yml is executed on a machine.
+Adhoc commands from ‘/usr/bin/ansible’.
+ansible-playbook is used for configuration management and deployment.
+------Parallelism and Shell Commands
+Reboot your company server in 12 parallel forks at time. For this, we need to set up SSHagent for connection.
+$ ssh-agent bash 
+$ ssh-add ~/.ssh/id_rsa 
+To run reboot for all your company servers in a group, 'abc', in 12 parallel forks -
+$ Ansible abc -a "/sbin/reboot" -f 12
+By default, Ansible will run the above Ad-hoc commands form current user account. If you want to change this behavior, you will have to pass the username in Ad-hoc commands as follows -
+$ Ansible abc -a "/sbin/reboot" -f 12 -u username
+adhoc command : 1.$ Ansible abc -m copy -a "src = /etc/yum.conf dest = /tmp/yum.conf"
+2.$ Ansible abc -m file -a "dest = /path/user1/new mode = 777 owner = user1 group = user1 state = directory" 
+3.$ Ansible abc -m file -a "dest = /path/user1/new state = absent"
+$ Ansible abc -m yum -a "name = demo-tomcat-1 state = present" --checks if yum package is installed or not
+$ Ansible abc -m yum -a "name = demo-tomcat-1 state = absent"  ---check the package is not installed.
+$ Ansible abc -m yum -a "name = demo-tomcat-1 state = latest"  ---checks the latest version of package is installed.
+Facts can be used for implementing conditional statements in playbook --$ Ansible all -m setup 
+Playbooks are the files where Ansible code is written. Playbooks are written in YAML format. YAML stands for Yet Another Markup Language.
+A YAML syntax needs to follow the correct indentation
+The Different YAML Tags : name ,hosts, vars,tasks,
+Roles provide a framework for fully independent, or interdependent collections of variables, tasks, files, templates, and modules.
+Each role is basically limited to a particular functionality or desired output.Roles are not playbooks it is used in playbook.
+Any logical entity which can be reused as a reusable function, that entity can be moved to role. 
+
+Example :
+--- 
+   name: install and configure DB
+   hosts: testServer
+   become: yes
+
+   vars: 
+      oracle_db_port_value : 1521
+   
+   tasks:
+   -name: Install the Oracle DB
+      yum: <code to install the DB>
+    
+   -name: Ensure the installed service is enabled and running
+   service:
+      name: <your service name>
+==================================
+$ ansible-galaxy -h 
+ansible-galaxy [delete|import|info|init|install|list|login|remove|search|setup] [--help] [options] ... 
+=====
+Roles example :
+$ ansible-galaxy init vivekrole 
+ERROR! The API server (https://galaxy.ansible.com/api/) is not responding, please try again later. 
+
+$ ansible-galaxy init --force --offline vivekrole 
+- vivekrole was created successfully 
+
+$ tree vivekrole/ 
+vivekrole/ 
++-- defaults 
+¦   +-- main.yml 
++-- files +-- handlers 
+¦   +-- main.yml 
++-- meta 
+¦   +-- main.yml 
++-- README.md +-- tasks 
+¦   +-- main.yml 
++-- templates +-- tests ¦   +-- inventory 
+¦   +-- test.yml 
++-- vars 
+    +-- main.yml 
+ 
+8 directories, 8 files
+
+=========================
+This code is of the playbook vivek_orchestrate.yml. We have defined the hosts: tomcat-node and called the two roles – install-tomcat and start-tomcat.
+The problem statement is that we have a war which we need to deploy on a machine via Ansible.
+
+--- 
+- hosts: tomcat-node 
+roles: 
+   - {role: install-tomcat} 
+   - {role: start-tomcat} 
+Contents of our directory structure from where we are running the playbook.
+
+Directory
+$ ls 
+ansible.cfg  hosts  roles  vivek_orchestrate.retry vivek_orchestrate.yml 
+Roles
+There is a tasks directory under each directory and it contains a main.yml. The main.yml contents of install-tomcat are -
+
+--- 
+#Install vivek artifacts 
+-  
+   block: 
+      - name: Install Tomcat artifacts
+         action: > 
+            yum name = "demo-tomcat-1" state = present 
+         register: Output 
+          
+   always: 
+      - debug: 
+         msg: 
+            - "Install Tomcat artifacts task ended with message: {{Output}}" 
+            - "Installed Tomcat artifacts - {{Output.changed}}" 
+The contents of main.yml of the start tomcat are -
+
+#Start Tomcat          
+-  
+   block: 
+      - name: Start Tomcat 
+      command: <path of tomcat>/bin/startup.sh" 
+      register: output 
+      become: true 
+   
+   always: 
+      - debug: 
+         msg: 
+            - "Start Tomcat task ended with message: {{output}}" 
+            - "Tomcat started - {{output.changed}}" 
+	  
+	  
+	  http://10.76.0.134:11677/HelloWorld/HelloWorld 
+	  
+==========================
+$ sudo ansible-playbook -i hosts vivek_orchestrate.yml –vvv
+Using /users/demo/vivek-playbook/ansible.cfg as config file.
+
+Variables:
+Example
+- hosts : <your hosts> 
+vars:
+tomcat_port : 8080
+================
+
+Exception Handling in Playbooks
+Ex :
+tasks: 
+   - name: Name of the task to be executed 
+      block: 
+         - debug: msg = 'Just a debug message , relevant for logging' 
+         - command: <the command to execute> 
+      
+      rescue: 
+         - debug: msg = 'There was an exception.. ' 
+         - command: <Rescue mechanism for the above exception occurred) 
+      
+      always: 
+         - debug: msg = "this will execute in all scenarios. Always will get logged" 
+
+----rescue and always are the keywords secific to exception handling. 
+Always gets executed in all cases.So if we compare the same with java, then it is similar to try, catch and finally block.
+Here, Block is similar to try block where you write the code to be executed and rescue is similar to catch block and always is similar to finally.
+
+===Example: Loops : 
+The tasks is to copy the set of all the war files from one directory to tomcat webapps folder.
+--- 
+#Tsting 
+- hosts: tomcat-node 
+   tasks: 
+      - name: Install Apache 
+      shell: "ls *.war" 
+      register: output 
+      args: 
+         chdir: /opt/ansible/tomcat/demo/webapps 
+      
+      - file: 
+         src: '/opt/ansible/tomcat/demo/webapps/{{ item }}' 
+         dest: '/users/demo/vivek/{{ item }}' 
+         state: link 
+      with_items: "{{output.stdout_lines}}"
+	  
+=====Conditionals:
+Conditionals are used where one needs to run a specific step based on a condition.
+
+--- 
+#Tsting 
+- hosts: all 
+   vars: 
+      test1: "Hello Vivek" 
+   tasks: 
+      - name: Testing Ansible variable 
+      debug: 
+         msg: "Equals" 
+         when: test1 == "Hello Vivek" 
+		 
+====tags
+- {role: start-tomcat, tags: ['install']}} 
+ansible-playbook -i hosts <your yaml> --tags "install" -vvv
+
+Example:
+- hosts: <A> 
+   environment: "{{your env}}" 
+   pre_tasks: 
+      - debug: msg = "Started deployment. 
+      Current time is {{ansible_date_time.date}} {{ansible_date_time.time}} " 
+     
+   roles: 
+      - {role: <your role>, tags: ['<respective tag>']} 
+   post_tasks: 
+      - debug: msg = "Completed deployment. 
+      Current time is {{ansible_date_time.date}} {{ansible_date_time.time}}" 
+ 
+- hosts: <B> 
+   pre_tasks: 
+      - debug: msg = "started.... 
+      Current time is {{ansible_date_time.date}} {{ansible_date_time.time}} " 
+        
+   roles: 
+      - {role: <your role>, tags: ['<respective tag>']} 
+   post_tasks: 
+      - debug: msg = "Completed the task.. 
+      Current time is {{ansible_date_time.date}} {{ansible_date_time.time}}" 
+	  
+	  
+================================
+A different solution might be defining the playbook's hosts using a variable, then passing in a specific host address via --extra-vars -
+# file: user.yml  (playbook) 
+--- 
+- hosts: '{{ target }}' 
+   user: ... 
+playbook contd…
+
+-Running the Playbook--> ansible-playbook user.yml --extra-vars "target = "<your host variable>"
+
+Playbook targeting a single host --> $ ansible-playbook user.yml --extra-vars "target = <your hosts variable>" --listhosts 
+========================
+Debugging :debugging Ansible playbooks are using the modules:
+Debug and Register
+Solution
+vars: 
+   age_path: "{{vivek.name}}/demo/" – marked in yellow is the fix. 
+ 
+How to use register -> Copy this code into a yml file say test.yml and run it  
+--- 
+#Tsting 
+- hosts: tomcat-node 
+   tasks: 
+ 
+   - shell: /usr/bin/uptime 
+      register: myvar 
+      - name: Just debugging usage 
+         debug: var = myvar 
+
+=====Common Playbook Issues
+Quoting
+Indentation
+Yaml does not support tab based indentation and supports space based indentation.
+
